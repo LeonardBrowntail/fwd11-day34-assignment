@@ -7,5 +7,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
   'courses' => CourseController::class,
-  'courseCategories' => CourseCategoryController::class
+  'categories' => CourseCategoryController::class
 ]);

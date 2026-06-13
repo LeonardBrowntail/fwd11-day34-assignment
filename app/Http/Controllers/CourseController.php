@@ -16,8 +16,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::all();
-        return $this->successResponse(CourseResource::collection($courses));
+
+        return $this->successResponse(CourseResource::collection(Course::all()));
     }
 
     /**

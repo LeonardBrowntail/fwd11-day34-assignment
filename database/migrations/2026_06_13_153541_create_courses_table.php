@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('instructor_id')->constrained('users', 'id');
+            $table->foreignId('category_id')->constrained('course_categories', 'id');
             $table->string('title', 255)->nullable(false);
             $table->string('description')->nullable(false);
             $table->unsignedTinyInteger('rating')->nullable(false);
-            $table->foreignId('category_id')->constrained('course_categories', 'id');
             $table->string('level')->nullable(false);
             $table->unsignedInteger('duration')->nullable(false);
             $table->string('thumbnail')->nullable();
