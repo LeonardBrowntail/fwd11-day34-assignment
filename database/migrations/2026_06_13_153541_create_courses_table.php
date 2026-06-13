@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title', 255)->nullable(false);
             $table->string('description')->nullable(false);
             $table->unsignedTinyInteger('rating')->nullable(false);
-            $table->foreign('course_categories')->references('id');
+            $table->foreignId('category_id')->constrained('course_categories', 'id');
             $table->string('level')->nullable(false);
             $table->unsignedInteger('duration')->nullable(false);
             $table->string('thumbnail')->nullable();

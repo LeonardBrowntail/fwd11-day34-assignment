@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
-            $table->foreign('users')->references('id');
-            $table->foreign('courses')->references('id');
+            $table->foreignId('user_id')->constrained('users', 'id');
+            $table->foreignId('course_id')->constrained('courses', 'id');
             $table->string('status')->nullable(false);
             $table->timestamps();
         });
