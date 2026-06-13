@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instructor_id')->constrained('users', 'id');
             $table->foreignId('category_id')->constrained('course_categories', 'id');
-            $table->string('title', 255)->nullable(false);
-            $table->string('description')->nullable(false);
-            $table->unsignedTinyInteger('rating')->nullable(false);
-            $table->string('level')->nullable(false);
-            $table->unsignedInteger('duration')->nullable(false);
+            $table->string('title', 255)->nullable(false)->default("Title");
+            $table->string('description')->nullable(false)->default("");
+            $table->unsignedTinyInteger('rating')->nullable(false)->default(0);
+            $table->string('level')->nullable(false)->default("");
+            $table->unsignedInteger('duration')->nullable(false)->default(0);
             $table->string('thumbnail')->nullable();
             $table->string('status');
             $table->timestamps();

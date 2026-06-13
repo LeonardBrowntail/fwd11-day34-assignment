@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\ApiResponse;
 use App\Http\Requests\CourseCategoryRequest;
+use App\Http\Requests\CourseCategoryUpdateRequest;
 use App\Http\Resources\CourseCategoryResource;
 use App\Models\CourseCategory;
-use Illuminate\Http\Request;
 
 class CourseCategoryController extends Controller
 {
@@ -16,8 +16,7 @@ class CourseCategoryController extends Controller
      */
     public function index()
     {
-        $categories = CourseCategory::all();
-        return $this->successResponse(CourseCategoryResource::collection($categories));
+        return $this->successResponse(CourseCategoryResource::collection(CourseCategory::all()));
     }
 
     /**
@@ -25,7 +24,7 @@ class CourseCategoryController extends Controller
      */
     public function store(CourseCategoryRequest $request)
     {
-        $validated = $request->validate();
+        $validated = $request->validated();
 
         $category = CourseCategory::create($validated);
         return $this->successResponse($category);
@@ -48,9 +47,19 @@ class CourseCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CourseCategoryUpdateRequest $request, string $id)
     {
-        //
+        $validated = $request->validated();
+
+        $category = CourseCategory::find($id);
+
+        if (!$category) {
+            return $this->notFoundResponse();
+        }
+
+        $category->update($validated);
+        return $this->successResponse($category->fresh());
+
     }
 
     /**
@@ -58,6 +67,8 @@ class CourseCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = CourseCategory::find($id);
+        $category->delete();
+        return $this->successResponse();
     }
 }

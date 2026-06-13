@@ -23,10 +23,11 @@ class CourseRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'instructor_id' => ['required', 'exists:users,id'],
+            'category_id' => ['required', 'exists:course_categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'rating' => ['required', 'numeric', 'min:0', 'max:10'],
-            'category_id' => ['required', 'exists:course_categories,id'],
             'level' => ['required', 'in:beginner,intermediate,advanced'],
             'duration' => ['required', 'integer', 'min:1'],
             'thumbnail' => ['nullable', 'string'],
