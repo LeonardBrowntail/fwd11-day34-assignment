@@ -17,8 +17,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-
-        return $this->successResponse(CourseResource::collection(Course::all()));
+        $course = Course::all();
+        return $this->successResponse(CourseResource::collection($course));
     }
 
     /**
@@ -26,9 +26,10 @@ class CourseController extends Controller
      */
     public function store(CourseRequest $request)
     {
-        $validated = $request->validated();
-
-        $course = Course::create($validated);
+        if (isset($request->validator) && $request->validator->fails()) {
+            return $this->errorResponse($request->validator->errors());
+        }
+        $course = Course::create($request->validated());
         return $this->successResponse($course);
     }
 
@@ -38,11 +39,9 @@ class CourseController extends Controller
     public function show(string $id)
     {
         $course = Course::find($id);
-
         if (!$course) {
             return $this->notFoundResponse();
         }
-
         return $this->successResponse($course);
     }
 
@@ -51,10 +50,16 @@ class CourseController extends Controller
      */
     public function update(CourseUpdateRequest $request, string $id)
     {
-        $validated = $request->validated();
+        if (isset($request->validator) && $request->validator->fails()) {
+            return $this->errorResponse($request->validator->errors());
+        }
 
         $course = Course::find($id);
-        $course->update($validated);
+        if (!$course) {
+            return $this->notFoundResponse();
+        }
+
+        $course->update($request->validated());
         return $this->successResponse($course->fresh());
     }
 

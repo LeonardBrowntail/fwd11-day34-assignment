@@ -7,6 +7,7 @@ use App\Http\Requests\CourseCategoryRequest;
 use App\Http\Requests\CourseCategoryUpdateRequest;
 use App\Http\Resources\CourseCategoryResource;
 use App\Models\CourseCategory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CourseCategoryController extends Controller
 {
@@ -16,7 +17,8 @@ class CourseCategoryController extends Controller
      */
     public function index()
     {
-        return $this->successResponse(CourseCategoryResource::collection(CourseCategory::all()));
+        $categories = CourseCategory::all();
+        return $this->successResponse(CourseCategoryResource::collection($categories));
     }
 
     /**
@@ -24,8 +26,10 @@ class CourseCategoryController extends Controller
      */
     public function store(CourseCategoryRequest $request)
     {
+        if (isset($request->validator) && $request->validator->fails()) {
+            return $this->errorResponse($request->validator->errors());
+        }
         $validated = $request->validated();
-
         $category = CourseCategory::create($validated);
         return $this->successResponse($category);
     }
@@ -36,11 +40,9 @@ class CourseCategoryController extends Controller
     public function show(string $id)
     {
         $category = CourseCategory::find($id);
-
         if (!$category) {
             return $this->notFoundResponse();
         }
-
         return $this->successResponse($category);
     }
 
@@ -49,15 +51,19 @@ class CourseCategoryController extends Controller
      */
     public function update(CourseCategoryUpdateRequest $request, string $id)
     {
-        $validated = $request->validated();
+        // check if request is valid
+        if (isset($request->validator) && $request->validator->fails()) {
+            return $this->errorResponse($request->validator->errors());
+        }
 
+        // catch not found exception
         $category = CourseCategory::find($id);
-
         if (!$category) {
             return $this->notFoundResponse();
         }
 
-        $category->update($validated);
+        // Update model
+        $category->update($request->validated());
         return $this->successResponse($category->fresh());
 
     }
@@ -68,6 +74,9 @@ class CourseCategoryController extends Controller
     public function destroy(string $id)
     {
         $category = CourseCategory::find($id);
+        if (!$category) {
+            return $this->notFoundResponse();
+        }
         $category->delete();
         return $this->successResponse();
     }
