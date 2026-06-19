@@ -54,11 +54,19 @@ class CourseController extends Controller
             return $this->errorResponse($request->validator->errors());
         }
 
+        // find course
         $course = Course::find($id);
         if (!$course) {
             return $this->notFoundResponse();
         }
 
+        // check if user (instructor) can update the course
+        $user = $request->user();
+        if (!($course->instructor_id !== $user->id)) {
+            return $this->unauthorizedResponse();
+        }
+
+        // update course
         $course->update($request->validated());
         return $this->successResponse($course->fresh());
     }
@@ -66,12 +74,18 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $course = Course::find($id);
 
         if (!$course) {
             return $this->notFoundResponse();
+        }
+
+        // check if user (instructor) can update the course
+        $user = $request->user();
+        if (!($course->instructor_id !== $user->id)) {
+            return $this->unauthorizedResponse();
         }
 
         $course->delete();

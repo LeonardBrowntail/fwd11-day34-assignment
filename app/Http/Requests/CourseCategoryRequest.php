@@ -13,7 +13,8 @@ class CourseCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return ($user->isAdmin() || $user->isInstructor());
     }
 
     /**

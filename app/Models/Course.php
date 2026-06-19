@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'instructor_id',
         'category_id',
@@ -24,4 +27,8 @@ class Course extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    public function instructor() : BelongsTo {
+        return $this->belongsTo(User::class);
+    }
 }
