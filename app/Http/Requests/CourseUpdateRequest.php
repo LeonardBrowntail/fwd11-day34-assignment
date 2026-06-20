@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Course;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +25,6 @@ class CourseUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'instructor_id' => ['sometimes', 'required','exists:users,id'],
             'category_id' => ['sometimes', 'required', 'exists:course_categories,id'],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['sometimes', 'required', 'string'],

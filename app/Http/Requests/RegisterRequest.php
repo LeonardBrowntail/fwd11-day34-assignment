@@ -2,13 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator as Val;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
 {
-    public Val $validator = null;
+    public $validator = null;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,14 +24,14 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['reqired', 'string', 'max:64'],
-            'email' => ['required', 'email', 'unique:users,email'],
+            'name' => ['required', 'string', 'max:64'],
+            'email' => ['required', 'string', 'unique:users,email'],
             'role' => ['required', 'string', 'in:student,instructor'],
-            'password' => ['required', 'password','min:8', 'confirmed']
+            'password' => ['required', 'string','min:8', 'confirmed']
         ];
     }
 
-    protected function failedValidation(Val $validator) {
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator) {
         $this->validator = $validator;
     }
 }

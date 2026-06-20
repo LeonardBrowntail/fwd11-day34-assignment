@@ -5,15 +5,15 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class CourseDestroyRequest extends FormRequest
 {
-    public $validator = null;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return $user->isAdmin() || $user->isInstructor();
     }
 
     /**
@@ -23,13 +23,6 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'email' => ['required', 'string'],
-            'password' => ['required', 'string']
-        ];
-    }
-
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator) {
-        $this->validator = $validator;
+        return [];
     }
 }
