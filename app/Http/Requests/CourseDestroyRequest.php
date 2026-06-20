@@ -5,9 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CourseCategoryRequest extends FormRequest
+class CourseDestroyRequest extends FormRequest
 {
-    public $validator = null;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,14 +23,6 @@ class CourseCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:100', 'unique:course_categories,name'],
-            'description' => ['nullable', 'string'],
-            'icon' => ['nullable', 'string']
-        ];
-    }
-
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator) {
-        $this->validator = $validator;
+        return [];
     }
 }

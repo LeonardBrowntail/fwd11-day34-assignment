@@ -13,7 +13,8 @@ class CourseUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return $user->isAdmin() || $user->isInstructor();
     }
 
     /**
@@ -24,7 +25,6 @@ class CourseUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'instructor_id' => ['sometimes', 'required','exists:users,id'],
             'category_id' => ['sometimes', 'required', 'exists:course_categories,id'],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['sometimes', 'required', 'string'],

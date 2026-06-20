@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CourseRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     public $validator = null;
     /**
@@ -13,8 +13,7 @@ class CourseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-        return $user->isAdmin() || $user->isInstructor();
+        return true;
     }
 
     /**
@@ -25,14 +24,10 @@ class CourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['required', 'exists:course_categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'rating' => ['required', 'numeric', 'min:0', 'max:10'],
-            'level' => ['required', 'in:beginner,intermediate,advanced'],
-            'duration' => ['required', 'integer', 'min:1'],
-            'thumbnail' => ['nullable', 'string'],
-            'status' => ['in:draft,published']
+            'name' => ['required', 'string', 'max:64'],
+            'email' => ['required', 'string', 'unique:users,email'],
+            'role' => ['required', 'string', 'in:student,instructor'],
+            'password' => ['required', 'string','min:8', 'confirmed']
         ];
     }
 

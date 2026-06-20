@@ -6,6 +6,21 @@ use Illuminate\Http\JsonResponse;
 
 trait ApiResponse
 {
+    private function generalResponse(bool $status, string $message, int $code, mixed $data = null) {
+        $json = [
+            'status' => $status,
+            'message' => $message
+        ];
+        if ($data) {
+            if ($status) {
+                $json['data'] = $data;
+            } else {
+                $json['errors'] = $data;
+            }
+        }
+        return response()->json($json, $code);
+    }
+
     private function successResponse(mixed $data = null) : JsonResponse {
         return response()->json([
             'status' => true,

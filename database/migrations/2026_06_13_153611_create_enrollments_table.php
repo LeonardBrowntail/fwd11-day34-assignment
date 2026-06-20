@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses', 'id');
             $table->string('status')->nullable(false)->default("");
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

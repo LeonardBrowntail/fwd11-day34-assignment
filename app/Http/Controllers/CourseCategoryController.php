@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\ApiResponse;
+use App\Http\Requests\CourseCategoryDestroyRequest;
 use App\Http\Requests\CourseCategoryRequest;
 use App\Http\Requests\CourseCategoryUpdateRequest;
 use App\Http\Resources\CourseCategoryResource;
 use App\Models\CourseCategory;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CourseCategoryController extends Controller
 {
@@ -71,12 +71,13 @@ class CourseCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(CourseCategoryDestroyRequest $request, string $id)
     {
         $category = CourseCategory::find($id);
         if (!$category) {
             return $this->notFoundResponse();
         }
+
         $category->delete();
         return $this->successResponse();
     }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\ApiResponse;
+use App\Http\Requests\CourseDestroyRequest;
 use App\Http\Requests\CourseRequest;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Http\Resources\CourseResource;
 use App\Models\Course;
-use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
@@ -29,7 +29,12 @@ class CourseController extends Controller
         if (isset($request->validator) && $request->validator->fails()) {
             return $this->errorResponse($request->validator->errors());
         }
-        $course = Course::create($request->validated());
+        // add user's id as the course's instructor_id
+        $validated = $request->validated();
+        $validated['instructor_id'] = $request->user()->id;
+
+        // create a new course entry in database and return instance for JsonResponse
+        $course = Course::create($validated);
         return $this->successResponse($course);
     }
 
@@ -54,11 +59,19 @@ class CourseController extends Controller
             return $this->errorResponse($request->validator->errors());
         }
 
+        // find course
         $course = Course::find($id);
         if (!$course) {
             return $this->notFoundResponse();
         }
 
+        // check if user (instructor) can update the course
+        $user = $request->user();
+        if (!($course->instructor_id !== $user->id)) {
+            return $this->unauthorizedResponse();
+        }
+
+        // update course
         $course->update($request->validated());
         return $this->successResponse($course->fresh());
     }
@@ -66,12 +79,18 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(CourseDestroyRequest $request, string $id)
     {
         $course = Course::find($id);
 
         if (!$course) {
             return $this->notFoundResponse();
+        }
+
+        // check if user (instructor) can update the course
+        $user = $request->user();
+        if ($course->instructor_id !== $user->id) {
+            return $this->unauthorizedResponse();
         }
 
         $course->delete();
