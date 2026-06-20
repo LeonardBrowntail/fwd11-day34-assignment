@@ -30,6 +30,6 @@ The second assignment (day 38) goals were to test how well students:
 
 ## Status
 
-### Day 34 assignment status: Done
+### Day 34 assignment status: Finished
 
-### Day 38 assignment status: Ongoing
+### Day 38 assignment status: Finished
