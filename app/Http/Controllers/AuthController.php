@@ -12,12 +12,15 @@ use Hash;
 class AuthController extends Controller
 {
     use ApiResponse;
+
     public function register(RegisterRequest $request) {
         if (isset($request->validator) && $request->validator->fails()) {
             return $this->errorResponse($request->validator->errors());
         }
-        User::create($request->validated());
-        return $this->generalResponse(true, "Berhasil mendaftar", 200);
+        $valid = $request->validated();
+        $valid['password'] = Hash::make($request->validated('password'));
+        $user = User::create($valid);
+        return $this->generalResponse(true, "Berhasil mendaftar", 200, $user);
     }
 
     public function login(LoginRequest $request) {
@@ -26,7 +29,7 @@ class AuthController extends Controller
         }
 
         // check username
-        $user = User::where(['email'], $request->validated('email'))->first();
+        $user = User::where('email', $request->validated('email'))->first();
         // check password
         $validPass = Hash::check($request->validated('password'), $user->password);
         
@@ -35,7 +38,7 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
-        return $this->generalResponse(true, "Berhasil login", 200, $token);
+        return $this->generalResponse(true, "Berhasil login", 200, ["auth_token" => $token]);
     }
 
     public function logout(Request $request) {
