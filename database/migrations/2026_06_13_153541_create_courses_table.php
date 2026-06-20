@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->string('status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
