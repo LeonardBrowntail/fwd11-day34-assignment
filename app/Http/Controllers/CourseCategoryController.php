@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ApiResponse;
+use App\Http\ApiTraits\CourseCategoryAPIResponses;
 use App\Http\Requests\CourseCategoryDestroyRequest;
 use App\Http\Requests\CourseCategoryRequest;
 use App\Http\Requests\CourseCategoryUpdateRequest;
@@ -11,14 +11,14 @@ use App\Models\CourseCategory;
 
 class CourseCategoryController extends Controller
 {
-    use ApiResponse;
+    use CourseCategoryAPIResponses;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $categories = CourseCategory::all();
-        return $this->successResponse(CourseCategoryResource::collection($categories));
+        return $this->courseCategoryIndexSuccessResponse(CourseCategoryResource::collection($categories));
     }
 
     /**
@@ -27,11 +27,11 @@ class CourseCategoryController extends Controller
     public function store(CourseCategoryRequest $request)
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return $this->errorResponse($request->validator->errors());
+            return $this->courseCategoryStoreValidationFailedResponse($request->validator->errors());
         }
         $validated = $request->validated();
         $category = CourseCategory::create($validated);
-        return $this->successResponse($category);
+        return $this->courseCategoryStoreSuccessResponse($category);
     }
 
     /**
@@ -41,9 +41,9 @@ class CourseCategoryController extends Controller
     {
         $category = CourseCategory::find($id);
         if (!$category) {
-            return $this->notFoundResponse();
+            return $this->courseCategoryNotFoundResponse();
         }
-        return $this->successResponse($category);
+        return $this->courseCategoryShowSuccessResponse($category);
     }
 
     /**
@@ -53,18 +53,18 @@ class CourseCategoryController extends Controller
     {
         // check if request is valid
         if (isset($request->validator) && $request->validator->fails()) {
-            return $this->errorResponse($request->validator->errors());
+            return $this->courseCategoryUpdateValidationFailedResponse($request->validator->errors());
         }
 
         // catch not found exception
         $category = CourseCategory::find($id);
         if (!$category) {
-            return $this->notFoundResponse();
+            return $this->courseCategoryNotFoundResponse();
         }
 
         // Update model
         $category->update($request->validated());
-        return $this->successResponse($category->fresh());
+        return $this->courseCategoryUpdateSuccessResponse($category->fresh());
 
     }
 
@@ -75,10 +75,10 @@ class CourseCategoryController extends Controller
     {
         $category = CourseCategory::find($id);
         if (!$category) {
-            return $this->notFoundResponse();
+            return $this->courseCategoryNotFoundResponse();
         }
 
         $category->delete();
-        return $this->successResponse();
+        return $this->courseCategoryDestroySuccessResponse();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Http\ApiTraits;
 
 use Illuminate\Http\JsonResponse;
 
@@ -20,6 +20,10 @@ trait ApiResponse
         }
         return response()->json($json, $code);
     }
+
+    /*
+        Kept these for assignment history purpose. Do not use.
+    */
 
     private function successResponse(mixed $data = null) : JsonResponse {
         return response()->json([

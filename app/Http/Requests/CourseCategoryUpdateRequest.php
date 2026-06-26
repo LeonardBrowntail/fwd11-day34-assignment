@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ApiTraits\ExposeValidatorOnFail;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CourseCategoryUpdateRequest extends FormRequest
 {
-    public $validator = null;
+    use ExposeValidatorOnFail;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -29,9 +30,5 @@ class CourseCategoryUpdateRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'icon' => ['sometimes', 'nullable', 'string']
         ];
-    }
-
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator) {
-        $this->validator = $validator;
     }
 }

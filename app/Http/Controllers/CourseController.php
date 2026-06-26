@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ApiResponse;
+use App\Http\ApiTraits\CourseAPIResponses;
 use App\Http\Requests\CourseDestroyRequest;
 use App\Http\Requests\CourseRequest;
 use App\Http\Requests\CourseUpdateRequest;
@@ -11,14 +11,14 @@ use App\Models\Course;
 
 class CourseController extends Controller
 {
-    use ApiResponse;
+    use CourseAPIResponses;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $course = Course::all();
-        return $this->successResponse(CourseResource::collection($course));
+        return $this->courseIndexSuccessResponse(CourseResource::collection($course));
     }
 
     /**
@@ -27,7 +27,7 @@ class CourseController extends Controller
     public function store(CourseRequest $request)
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return $this->errorResponse($request->validator->errors());
+            return $this->courseStoreValidationFailedResponse($request->validator->errors());
         }
         // add user's id as the course's instructor_id
         $validated = $request->validated();
@@ -35,7 +35,7 @@ class CourseController extends Controller
 
         // create a new course entry in database and return instance for JsonResponse
         $course = Course::create($validated);
-        return $this->successResponse($course);
+        return $this->courseStoreSuccessResponse($course);
     }
 
     /**
@@ -45,9 +45,9 @@ class CourseController extends Controller
     {
         $course = Course::find($id);
         if (!$course) {
-            return $this->notFoundResponse();
+            return $this->courseNotFoundResponse();
         }
-        return $this->successResponse($course);
+        return $this->courseShowSuccessResponse($course);
     }
 
     /**
@@ -56,24 +56,24 @@ class CourseController extends Controller
     public function update(CourseUpdateRequest $request, string $id)
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return $this->errorResponse($request->validator->errors());
+            return $this->courseUpdateValidationFailedResponse($request->validator->errors());
         }
 
         // find course
         $course = Course::find($id);
         if (!$course) {
-            return $this->notFoundResponse();
+            return $this->courseNotFoundResponse();
         }
 
         // check if user (instructor) can update the course
         $user = $request->user();
         if (!($course->instructor_id !== $user->id)) {
-            return $this->unauthorizedResponse();
+            return $this->courseUpdateNotOwnerResponse();
         }
 
         // update course
         $course->update($request->validated());
-        return $this->successResponse($course->fresh());
+        return $this->courseUpdateSuccessResponse($course->fresh());
     }
 
     /**
@@ -84,16 +84,16 @@ class CourseController extends Controller
         $course = Course::find($id);
 
         if (!$course) {
-            return $this->notFoundResponse();
+            return $this->courseNotFoundResponse();
         }
 
         // check if user (instructor) can update the course
         $user = $request->user();
         if ($course->instructor_id !== $user->id) {
-            return $this->unauthorizedResponse();
+            return $this->courseDestroyNotOwnerResponse();
         }
 
         $course->delete();
-        return $this->successResponse();
+        return $this->courseDestroySuccessResponse();
     }
 }

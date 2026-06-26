@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ApiResponse;
+use App\Http\ApiTraits\AuthAPIResponses;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
@@ -11,21 +11,21 @@ use Hash;
 
 class AuthController extends Controller
 {
-    use ApiResponse;
+    use AuthAPIResponses;
 
     public function register(RegisterRequest $request) {
         if (isset($request->validator) && $request->validator->fails()) {
-            return $this->errorResponse($request->validator->errors());
+            return $this->registerFailedValidationResponse($request->validator->errors());
         }
         $valid = $request->validated();
         $valid['password'] = Hash::make($request->validated('password'));
         $user = User::create($valid);
-        return $this->generalResponse(true, "Berhasil mendaftar", 200, $user);
+        return $this->registerSuccessResponse();
     }
 
     public function login(LoginRequest $request) {
         if (isset($request->validator) && $request->validator->fails()){
-            return $this->errorResponse($request->validator->errors());
+            return $this->loginFailedValidationResponse($request->validator->errors());
         }
 
         // check username
@@ -34,15 +34,15 @@ class AuthController extends Controller
         $validPass = Hash::check($request->validated('password'), $user->password);
         
         if (!$user || !$validPass) {
-            return $this->generalResponse(false, "Email atau password salah", 401);
+            return $this->loginFailedAuthenticationResponse();
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
-        return $this->generalResponse(true, "Berhasil login", 200, ["auth_token" => $token]);
+        return $this->loginSuccessResponse($token);
     }
 
     public function logout(Request $request) {
         $request->user()->currentAccessToken()->delete();
-        return $this->generalResponse(true, "Berhasil logout", 200);
+        return $this->logoutSuccessResponse();
     }
 }
